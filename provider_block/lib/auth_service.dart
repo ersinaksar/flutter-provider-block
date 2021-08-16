@@ -8,8 +8,11 @@ class AuthService with ChangeNotifier {
   //kullanıcı oluşturmamızı sağlayacak kullanıcı oturu açmamızı sağlayacak auth nesnemiz
   final FirebaseAuth _auth = FirebaseAuth.instance;
   KullaniciDurumu _durum = KullaniciDurumu.OturumAcilmamis;
+  late User _user;
 
   KullaniciDurumu get durum => _durum;
+
+  User get user => _user;
 
   set durum(KullaniciDurumu value) {
     _durum = value;
@@ -24,9 +27,11 @@ class AuthService with ChangeNotifier {
 
   void _authStateChanged(User? user) {
     if (user == null) {
+      _user == null;
       //set metodunu kullanmak için durum yazıyoruz. _durum yazsaydık doğrudan değişkeni değiştirmiş olacaktık
       durum = KullaniciDurumu.OturumAcilmamis;
     } else {
+      _user = user;
       durum = KullaniciDurumu.OturumAcilmis;
     }
   }
@@ -38,6 +43,7 @@ class AuthService with ChangeNotifier {
       UserCredential _credential = await _auth.createUserWithEmailAndPassword(
           email: email, password: sifre);
       User? _yeniKullanici = _credential.user;
+      _user = _yeniKullanici!;
       return _yeniKullanici;
     } catch (e) {
       //br hata çıktığında durumu oturum açılmamaış olarak ypıyoruz ki ekranda dönmeye devam eden çember yerine
@@ -58,14 +64,15 @@ class AuthService with ChangeNotifier {
       UserCredential _credential =
           await _auth.signInWithEmailAndPassword(email: email, password: sifre);
       User? _oturumAcanKullanici = _credential.user;
+      _user = _oturumAcanKullanici!;
       return _oturumAcanKullanici;
     } catch (e) {
       //br hata çıktığında durumu oturum açılmamaış olarak ypıyoruz ki ekranda dönmeye devam eden çember yerine
       //sistemi haberdar edip bir şey göstrebilelelim
       durum = KullaniciDurumu.OturumAcilmamis;
       debugPrint("hata "
-          "dosya: auth_service"
-          "fonksiyon:signInUserWithEmailandPassword"
+          "dosya: auth_service "
+          "fonksiyon: signInUserWithEmailandPassword "
           "hata: $e");
       return null;
     }
@@ -74,11 +81,18 @@ class AuthService with ChangeNotifier {
   Future<bool> signOut() async {
     try {
       await _auth.signOut();
+      //_user = null!; bu patlıyor
+      var f = _user;
+      if (f != null) {
+        var _user = null; // Safe
+        debugPrint("user: " + _user.toString());
+      }
+      durum = KullaniciDurumu.OturumAcilmamis;
       return true;
     } catch (e) {
       debugPrint("hata "
           "dosya: auth_service"
-          "fonksiyon:signOut"
+          "fonksiyon: signOut"
           "hata: $e");
       return false;
     }

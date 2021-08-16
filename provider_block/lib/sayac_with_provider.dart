@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:provider_block/auth_service.dart';
 import 'package:provider_block/counter.dart';
 
 class ProviderlaSayacUygulamasi extends StatelessWidget {
@@ -7,17 +8,56 @@ class ProviderlaSayacUygulamasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Providerla Sayac Uygulaması"),
-      ),
-      body: Center(
-        //Burada değeri göserme işlemini yapıyoruz
-        child: MyColumn(),
-      ),
-      //Burada değeri arttırma ve azaltma işlemini yapıyoruz
-      floatingActionButton: MyFloatingActionButtons(),
-    );
+    final myAuth = Provider.of<AuthService>(context);
+
+    switch (myAuth.durum) {
+      case KullaniciDurumu.OturumAciliyor:
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      case KullaniciDurumu.OturumAcilmamis:
+        return Scaffold(
+          body: Center(
+            child: Column(
+              //verilerimiz ortaya gelsin diye bunu ekliyoruz
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Uygulamayı kullanmak içi Lütfen Oturum Açin"),
+                RaisedButton(
+                  onPressed: () async {
+                    await myAuth.createUserWithEmailandPassword(
+                        "ersinaksar@yandex.com", "123456");
+                  },
+                  color: Colors.blue,
+                  child: Text("Kullanıcı Oluştur"),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    await myAuth.signInUserWithEmailandPassword(
+                        "ersinaksar@yandex.com", "123456");
+                  },
+                  color: Colors.blue,
+                  child: Text("Oturum Açın"),
+                ),
+              ],
+            ),
+          ),
+        );
+      case KullaniciDurumu.OturumAcilmis:
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Providerla Sayac Uygulaması"),
+          ),
+          body: Center(
+            //Burada değeri göserme işlemini yapıyoruz
+            child: MyColumn(),
+          ),
+          //Burada değeri arttırma ve azaltma işlemini yapıyoruz
+          floatingActionButton: MyFloatingActionButtons(),
+        );
+    }
   }
 }
 
@@ -60,6 +100,7 @@ class MyColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final myAuth = Provider.of<AuthService>(context);
     var mySayac = Provider.of<Counter>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -67,7 +108,18 @@ class MyColumn extends StatelessWidget {
         Text(
           mySayac.sayac.toString(),
           style: TextStyle(fontSize: 30),
-        )
+        ),
+        Text(
+          myAuth.user.email.toString(),
+          style: TextStyle(fontSize: 30),
+        ),
+        RaisedButton(
+          onPressed: () async {
+            await myAuth.signOut();
+          },
+          color: Colors.blue,
+          child: Text("Oturumu kapat"),
+        ),
       ],
     );
   }

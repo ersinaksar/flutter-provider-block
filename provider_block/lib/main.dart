@@ -1,9 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider_block/auth_service.dart';
 import 'package:provider_block/counter.dart';
 import 'package:provider_block/sayac_with_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -56,8 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ChangeNotifierProvider<Counter>(
-                      create: (_) => Counter(0),
+                    builder: (context) => MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider<Counter>(
+                          create: (_) => Counter(0),
+                        ),
+                        ChangeNotifierProvider<AuthService>(
+                          create: (_) => AuthService(),
+                        ),
+                      ],
                       child: ProviderlaSayacUygulamasi(),
                     ),
                   ),
