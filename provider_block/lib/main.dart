@@ -4,6 +4,7 @@ import 'package:provider_block/auth_service.dart';
 import 'package:provider_block/counter.dart';
 import 'package:provider_block/sayac_with_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:provider_block/stream_kullanimi.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,7 +75,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               },
-            )
+            ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => StreamKullanimi()));
+              },
+              child: Text("Stream Kullanımı"),
+              color: Colors.yellow,
+            ),
           ],
         ),
       ),
