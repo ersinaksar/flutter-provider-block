@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider_block/auth_service.dart';
+import 'package:provider_block/block_kullanimi.dart';
 import 'package:provider_block/counter.dart';
 import 'package:provider_block/sayac_with_provider.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: Text("Stream Kullanımı"),
               color: Colors.yellow,
+            ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => BlockKullanimi()));
+              },
+              child: Text("Block Kullanımı"),
+              color: Colors.deepOrange,
             ),
           ],
         ),
