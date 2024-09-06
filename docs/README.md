@@ -1,2 +1,2 @@
 # flutter-provider-block
-flutter ile provider ve block kullanımı
+Provider and Block usage with Flutter
